@@ -1,0 +1,108 @@
+﻿@model PaginatedList<Order>
+@{
+    ViewData["Title"] = "Index";
+    int order = (Model.PageIndex - 1) * 3;
+}
+
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h1>Orders</h1>
+        <div class="row">
+           
+            <div class="col-md-8">
+                <form asp-action="index" method="get">
+                    <div class="row">
+                         <select  name="orderStatus" class="form-select" aria-label="Default select example">
+                            
+                                <option >Choose</option>
+                            
+                          @foreach (var item in Enum.GetNames(typeof(OrderStatus)))
+                            {
+                                if (ViewBag.OrderStatus == (byte)Enum.Parse(typeof(OrderStatus), item))
+                                {
+                                    <option  selected value="@((byte)Enum.Parse(typeof(OrderStatus),item))">@item</option>
+
+                                }
+                                else
+                                {
+                                    <option value="@((byte)Enum.Parse(typeof(OrderStatus),item))">@item</option>
+
+                                }
+                            }
+               
+                                    </select>
+                        <div  class="col-md-4">
+                            <div class="form-group">
+                                <input  type="text" name="search" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            </div>
+                        </div>
+                        <div  class="col-md-4">
+                           
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+           
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Count</th>
+                    <th scope="col">Total Price</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    order++;
+                    <tr>
+                        <th scope="row">@order</th>
+                        <td>@item.FullName</td>
+                        <td>@item.OrderItems.Count</td>
+                        <td>@item.OrderItems.Sum(x=>x.Count * x.UnitPrice).ToString("0.00")</td>
+                        <td>@item.CreatedAt.ToString("dd-MM-yyyy")</td>
+                        <td><span class="badge badge-@(item.Status==OrderStatus.Pending?"warning":(item.Status==OrderStatus.Rejected?"danger":"success"))">@item.Status </span></td>
+
+                        <td>
+
+                            <a class="btn btn-warning" asp-action="detail" asp-route-id="@item.Id">Detail</a>
+
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.HasPrevious?"":"disabled")">
+                    <a class="page-link" asp-action="index" asp-route-search="@ViewBag.Search" asp-route-orderStatus="@ViewBag.OrderStatus" asp-route-page="@(Model.PageIndex-1)" tabindex="-1">Previous</a>
+                </li>
+
+                @for (int i = 1; i <= Model.TotalPage; i++)
+                {
+
+                    <li class="page-item @(i==Model.PageIndex?"active":"")"><a class="page-link" asp-action="index" asp-route-search="@ViewBag.Search" asp-route-orderstatus="@ViewBag.OrderStatus" asp-route-page="@i">@i</a></li>
+
+                }
+                <li class="page-item @(Model.HasNext?"":"disabled")">
+                    <a class="page-link" asp-action="index" asp-route-search="@ViewBag.Search" asp-route-orderStatus="@ViewBag.OrderStatus" asp-route-page="@(Model.PageIndex+1)">Next</a>
+
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+

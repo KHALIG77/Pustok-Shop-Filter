@@ -1,0 +1,44 @@
+﻿@model BookDetailViewModel
+
+
+
+@foreach (var comment in Model.Book.BookComments)
+{
+
+    <div class="review-comment mb--20">
+        <div class="avatar">
+            <img src="~/uploads/books/icon/author-logo.png" alt="">
+        </div>
+        <div class="text">
+            <div class="rating-block mb--15">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <span class="ion-android-star-outline @(i<=comment.Rate?"star_on":"")"></span>
+                }
+
+            </div>
+            <h6 class="author">
+                @comment.AppUser.FullName <span class="font-weight-400">@comment.CreatedAt.ToString("MMMM,dd,yyyy")</span>
+            </h6>
+            <p>
+
+                @comment.Text
+            </p>
+
+        </div>
+
+    </div>
+}
+@if (Model.CommentCount < Model.TotalCommentCount)
+{
+   <div class="d-flex justify-content-center">
+        <div class="col-md-2 ">
+            <a asp-action="detail" asp-route-id="@Model.Book.Id" asp-route-commentcount="@Model.CommentCount" class="btn-danger mx-auto comment">Load More </a>
+        </div>
+
+   </div>
+   
+}
+
+
+
